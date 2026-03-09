@@ -1,167 +1,131 @@
 # Autonomy Golf
 
-## Document Role
+This is the portable manifesto for autonomy golf: a short explainer you can drop into any repository that wants to make the drive toward total automation fun, legible, and honest.
 
-This is the public explainer: why autonomy golf exists, what the numbers mean, and what makes the system trustworthy.
+Canonical source: [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf)
 
-If you want implementation mechanics, read [autonomy-golf-agent.md](autonomy-golf-agent.md).
-If you want the concrete template and parser substrate, read [../CHANGELOG.md](../CHANGELOG.md).
+If you are adopting the system in another project, this file should travel with the rest of the autonomy-golf bundle:
 
-## Purpose
+- `CHANGELOG.md`
+- `docs/autonomy-golf.md`
+- `docs/autonomy-golf-agent.md`
+- `docs/autonomy-golf-checklist.md`
+- `tools/changelog_scores.py`
+- `tools/render_autonomy_badge.py`
 
-Autonomy golf is a simple game any software project can play to reduce how much human steering a successful change requires.
+## What It Is
 
-The word `golf` is deliberate. Lower is better:
+Autonomy golf is a simple game for software projects:
 
-- `5` means the human tightly specified the change.
-- `0` means the change was fully autonomous.
+- record who actually drove each change
+- keep that accounting conservative
+- publish the result as a score the project tries to drive down over time as it moves toward total automation
 
-The point is not to make the number look good. The point is to create pressure toward a more genuinely autonomous development loop while keeping the accounting honest enough that the number still means something.
+The word `golf` is literal. Lower is better.
 
-Any project that talks about agents, autonomy, or self-improving tooling has the same risk: ordinary human-guided maintenance can accumulate while the project keeps implying stronger autonomy than it has actually achieved. Autonomy golf is a way to make that gap visible.
+- `6` means a fully human change
+- `0` means a fully autonomous change
 
-## Why Track It
+The point is not to make the number look good. The point is to make progress toward total automation visible, fun to chase, and honest enough that the project can tell whether it is actually getting there.
 
-Autonomy golf exists to answer a few concrete questions:
+That only works when the project can also build explicit consensus around a change's meaning, motivation, and purpose. Autonomy golf is not just about assigning a score after the fact. It is about forcing the project to say what a change means, why it exists, and what it is for, in a form that both humans and tooling can revisit later.
 
-- Are we actually making the loop more self-directed, or just adding more code around a human-driven process?
-- Which subsystems still need the most human intervention?
-- Are improvements in autonomy coming from real changes in agent behavior, or just from looser bookkeeping?
-- When a project says it is moving toward full autonomy, is there evidence for that claim?
+## Why It Exists
 
-The score is therefore not just a vanity metric. It is a governance tool.
+Projects that talk about agents, autonomy, or self-improving workflows all face the same failure mode: ordinary human-guided work keeps accumulating while the narrative gets more autonomous than the evidence.
 
-It also depends on a specific kind of artifact: an agent-managed `CHANGELOG.md` that stays readable to humans while remaining structured enough for tooling to parse. Without that combination, the badge becomes either hand-wavy prose or brittle machine output, and neither is useful.
+Autonomy golf exists to make that gap visible while giving the project a game worth playing: keep lowering the score, keep improving the grounding, and keep getting closer to total automation without lying to yourself about the distance.
 
-## Scoring Model
+It gives a project a disciplined way to ask:
 
-Each top-level provenance bullet in a changelog entry gets one autonomy weight:
+- are we actually reducing human steering?
+- which subsystems still need the most human direction?
+- are we getting more autonomous, or just loosening the bookkeeping?
 
-- `Human-driven (5)`
-- `Human-directed, AI-shaped (4)`
-- `AI-identified within brief, human-shaped (3)`
-- `AI-identified within brief, human-approved (2)`
-- `Self-initiated, human-approved (1)`
-- `Fully autonomous (0)`
+## Core Model
 
-`Grounding` is not scored.
+Each top-level provenance bullet in a changelog entry gets one score:
 
-Each commit header carries two related numbers:
+| Tier | Score |
+| --- | ---: |
+| `Fully human` | `6` |
+| `Human-driven` | `5` |
+| `Human-directed, AI-shaped` | `4` |
+| `AI-identified within brief, human-shaped` | `3` |
+| `AI-identified within brief, human-approved` | `2` |
+| `Self-initiated, human-approved` | `1` |
+| `Fully autonomous` | `0` |
 
-- `score`: the arithmetic mean of the top-level provenance bullet weights for that commit, rounded to two decimals
-- `complexity`: the summed weight of those same top-level bullets
+Each commit entry then exposes:
 
-## Why Grounding Is Separate
+- `score`: the mean of those top-level provenance weights
+- `complexity`: the sum of those top-level provenance weights, plus `+1` for each nested sub-bullet under provenance items scored `3` or higher
 
-`Grounding` is not scored because it is measuring a different thing.
+`score` is the main autonomy signal. `complexity` is a secondary scope signal.
 
-Provenance answers:
+## Golf Language
 
-- who drove the change
-- how autonomous the work really was
+The repo should talk like a game, not just a rubric. A simple house interpretation is:
 
-Grounding answers:
+| Score | House term | Meaning |
+| --- | --- | --- |
+| `0` | `hole in one` | fully autonomous |
+| `1` | `albatross` | very strongly self-directed with only light human approval |
+| `2` | `eagle` | clearly below par; the agent surfaced and largely drove the change |
+| `3` | `birdie` | better than par, but still meaningfully mixed |
+| `4` | `par` | mixed agency; a reasonable default target for an early autonomy system |
+| `5` | `bogey` | still substantially human-directed |
+| `6` | `double bogey` | fully human work |
 
-- what evidence supports the change
-- how strong the validation was
-- whether later readers should trust the claim
+This is intentionally informal language. It gives teams a fun way to talk about progress toward total automation while the precise provenance tiers keep the score honest.
 
-Those should not be collapsed into one number.
+## Grounding Matters
 
-Strong grounding should not make a human-driven change look more autonomous. Weak grounding should not make an agent-driven change look less autonomous. Instead, the system should show both dimensions clearly:
+Autonomy golf tracks a second dimension on purpose:
 
-- autonomy level through `score`
-- validation quality through `Grounding`
+- `score` tells you how autonomous the change was
+- `Grounding` tells you how well the change was validated
 
-That separation is what keeps autonomy golf useful for data-driven decisions. A project should be able to say both:
+`Grounding` is intentionally unscored because provenance and validation are different questions.
 
-- how autonomous a change was
-- how well the change was actually validated
+That separation is what keeps the game useful:
 
-Without explicit grounding, autonomy accounting becomes easy to game. The score may go down while trust in the history goes down with it.
+- strong validation should not make a human-driven change look more autonomous
+- weak validation should not disappear behind a low score
+- data-driven decisions need both provenance and evidence
 
-## How To Read The Numbers
+## What To Add To A Repo
 
-`score` is the main autonomy signal.
+To install autonomy golf in another project, add these files together:
 
-- lower is better
-- `0` means fully autonomous
-- `5` means tightly human-driven
-- because it is bounded, commits stay on the same `0..5` spectrum even when they differ in breadth
+- [../CHANGELOG.md](../CHANGELOG.md): the structured, agent-managed changelog template
+- [autonomy-golf-agent.md](autonomy-golf-agent.md): the reusable agent integration brief
+- [autonomy-golf-checklist.md](autonomy-golf-checklist.md): the concise maintenance loop for later updates
+- [../tools/changelog_scores.py](../tools/changelog_scores.py): the parser and rollup tool
+- [../tools/render_autonomy_badge.py](../tools/render_autonomy_badge.py): the badge and README snapshot generator
 
-`complexity` is the secondary scope signal.
+If you are reading this outside the canonical repository, get those files from [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf).
 
-- higher means the commit needed more separately scored provenance structure
-- two commits can have similar autonomy levels but different breadth
-- when `complexity` is numerically identical to `score`, it is omitted from the header as redundant
+## How The Loop Works
 
-In practice:
+The healthy loop is:
 
-- use `score` to judge autonomy level
-- use `complexity` to judge how much scored change surface the commit covered
+1. make a change
+2. explain its meaning, motivation, and purpose in `CHANGELOG.md`
+3. record its provenance conservatively in `CHANGELOG.md`
+4. record grounding honestly
+5. regenerate the score outputs
+6. publish the updated badge or snapshot
+7. use the result to decide where autonomy is still weak
 
-## Why The Accounting Is Strict
+This works best when the changelog is agent-managed and kept in a disciplined structure that is both readable to humans and stable for tooling.
 
-A useful autonomy-golf system should deliberately bias toward under-claiming autonomy.
+## Start Here
 
-That means:
+If you want to adopt autonomy golf in another project:
 
-- if provenance is ambiguous, choose the more conservative tier
-- if a change was surfaced by the AI only inside a broad human brief, do not describe it as self-initiated
-- if a change was fully human-authored, say so plainly or keep it out of autonomy-scored history if that is project policy
+1. point your agent at [autonomy-golf-agent.md](autonomy-golf-agent.md)
+2. copy the changelog and tooling from the canonical repository at [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf)
+3. once installed, tell future agents to read and follow [autonomy-golf-checklist.md](autonomy-golf-checklist.md)
 
-The goal is still to push as much work as possible toward `Fully autonomous`.
-
-But inflated autonomy claims are failure, not progress.
-
-If the bookkeeping gets soft, the game stops being useful. The number improves, but the project learns nothing.
-
-That is why autonomy golf works best when the changelog is actively maintained by the agent as part of the normal loop, not treated as an afterthought. The human-readable narrative and the parser-facing structure have to stay aligned.
-
-## Why Subsystems Matter
-
-Commit headers should use Linux-kernel-style subsystem prefixes:
-
-```text
-train: Add train and wall time budget modes
-checkpoints: Benchmark resume-ready checkpoint latency
-changelog: Add subsystem-scoped commit headers
-```
-
-This makes autonomy golf analyzable by subsystem rather than only by day or by whole-project history.
-
-That matters because autonomy does not improve uniformly.
-
-## What “Winning” Looks Like
-
-A good autonomy-golf trajectory is not:
-
-- hiding human direction
-- merging many ideas into one header to dilute provenance
-- using vague changelog language so the parser cannot tell what happened
-
-A good trajectory is:
-
-- more commits whose ideas were initiated by the agent
-- more commits whose implementation and validation were designed by the agent
-- more subsystems where the mean autonomy score trends downward over time
-- unchanged or improved rigor in grounding and provenance honesty
-
-## Join The Game
-
-The easiest way to start is to point your coding agent at [autonomy-golf-agent.md](autonomy-golf-agent.md) and ask it to integrate autonomy golf into your project.
-
-That companion document is a reusable agent-facing integration brief. It explains how to install the autonomy-golf system itself in another codebase by leveraging the working changelog, parser, and badge infrastructure already present here.
-
-The important implementation detail is that this works best with an agent-managed changelog. The agent should keep `CHANGELOG.md` updated as part of the working loop, using a disciplined structure that is pleasant to read in Git but regular enough that a parser can verify scores, subsystem headers, and rollups without guesswork.
-
-## This Repository
-
-This repository packages one concrete implementation:
-
-- `CHANGELOG.md`: starter changelog template and example entry
-- `tools/changelog_scores.py`: parser and rollup tool
-- `tools/render_autonomy_badge.py`: badge renderer and README snapshot updater
-- `docs/autonomy-golf-agent.md`: reusable agent integration brief
-
-The README shows the current project snapshot as a generated badge plus a generated snapshot block. Later, the same accounting can drive richer charts without changing the underlying model.
+That is the simplest path to getting a real autonomy-golf badge and a maintainable history instead of a one-off doc experiment.

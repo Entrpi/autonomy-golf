@@ -2,7 +2,9 @@
 
 ![Autonomy Golf Badge](docs/autonomy-golf-badge.svg)
 
-Come play autonomy golf: wire your project up with a changelog, parser, and badge that keep honest score on how autonomous its changes really are, then try to drive that score down over time without getting sloppy about evidence.
+Come play autonomy golf: wire your project up with a changelog, parser, and badge that make the drive toward total automation fun, legible, and honest, then try to drive the score down over time without getting sloppy about evidence.
+
+Canonical GitHub home: [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf)
 
 Autonomy golf works best with an agent-managed `CHANGELOG.md` that stays readable to humans while remaining structured enough for parsers, badges, and charts. This repository packages the working pieces:
 
@@ -11,6 +13,8 @@ Autonomy golf works best with an agent-managed `CHANGELOG.md` that stays readabl
 - the agent integration brief in [docs/autonomy-golf-agent.md](docs/autonomy-golf-agent.md)
 - the score parser in [tools/changelog_scores.py](tools/changelog_scores.py)
 - the badge renderer in [tools/render_autonomy_badge.py](tools/render_autonomy_badge.py)
+
+Just as importantly, autonomy golf is a discipline for building explicit consensus around a change's meaning, motivation, and purpose. The point is to make progress toward total automation both fun and meaningful: fun enough that teams want to play, meaningful enough that the score still corresponds to real autonomy.
 
 The key discipline is that autonomy golf tracks two separate things on purpose:
 
@@ -23,6 +27,7 @@ Scoring tiers:
 
 | Tier | Meaning | Score |
 | --- | --- | ---: |
+| `Fully human` | the change was identified and authored by a human, with the agent absent or limited to review and minor revisions | `6` |
 | `Human-driven` | the human identified the change and specified it tightly enough that the agent mostly executed | `5` |
 | `Human-directed, AI-shaped` | the human set the direction, but the agent designed the concrete mechanism or validation | `4` |
 | `AI-identified within brief, human-shaped` | the agent surfaced the opportunity inside a broad human brief, and the human materially reshaped it | `3` |
@@ -35,10 +40,10 @@ Current project snapshot from [CHANGELOG.md](CHANGELOG.md):
 
 | Metric | Value |
 | --- | --- |
-| Mean autonomy score | `3.00 / 5` |
-| Mean complexity | `6.00 / commit` |
-| Mean score per top-level bullet | `3.00 / 5` |
-| History covered | `1` commit across `1` subsystem |
+| Mean autonomy score | `3.50 / 6` |
+| Mean complexity | `19.50 / commit` |
+| Mean score per top-level bullet | `3.33 / 6` |
+| History covered | `2` commits across `1` subsystem |
 <!-- autonomy-golf-snapshot:end -->
 
 ## Document Map
@@ -58,24 +63,31 @@ The fastest way to adopt the system in another codebase is:
 3. Copy or adapt the tooling under [tools/](tools/).
 4. Add the badge to your README and keep it refreshed from the parser output.
 
+If you are starting from outside this repository, the canonical source for those files is [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf).
+
 Once autonomy golf is already installed in a project, the shorter maintenance instruction is: read and follow [docs/autonomy-golf-checklist.md](docs/autonomy-golf-checklist.md).
 
 ## Core Ideas
 
-- `score` is the bounded autonomy signal on a `0..5` scale. Lower is better.
-- `complexity` is the summed scope signal for scored provenance bullets.
+- the central game is to push the project toward total automation in a way that stays enjoyable, legible, and worth trusting
+- `score` is the bounded autonomy signal on a `0..6` scale. Lower is better.
+- `complexity` is the scope signal: top-level provenance weights plus a `+1` bonus for each nested sub-bullet under provenance items scored `3` or higher.
 - top-level provenance bullets are the scored units
+- good entries do more than log tasks; they build explicit consensus on a change's meaning, motivation, and purpose
 - `Grounding` is the separate validation signal: files changed, checks run, and measured effects. It is intentionally unscored so validation strength stays distinct from autonomy level.
 - subsystem-prefixed commit headers make the history analyzable by subsystem as well as by day
 
 ## Example Entry
 
 ```md
-### March 9, 2026 — `abc1234` — parser: Add subsystem rollup output — score `3` — complexity `6`
+### March 9, 2026 — `abc1234` — parser: Add subsystem rollup output — score `3` — complexity `7`
 
 **Human-directed, AI-shaped (4)**
 
 - Requested subsystem-level autonomy reporting so the project can see where human direction is still concentrated.
+  - Meaning: autonomy trends should be inspectable by subsystem, not only at whole-project level.
+  - Motivation: aggregate project scores hide where the real human bottlenecks still are.
+  - Purpose: make the score actionable enough to steer future autonomy work.
   - Added a subsystem rollup mode to the parser.
 
 **AI-identified within brief, human-approved (2)**

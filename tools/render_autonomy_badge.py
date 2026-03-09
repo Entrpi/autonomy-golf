@@ -22,6 +22,7 @@ README_PATH = ROOT / "README.md"
 LABEL_TEXT = "autonomy golf"
 LABEL_WIDTH = 108
 BADGE_HEIGHT = 20
+MAX_SCORE = 6
 SNAPSHOT_START = "<!-- autonomy-golf-snapshot:start -->"
 SNAPSHOT_END = "<!-- autonomy-golf-snapshot:end -->"
 
@@ -51,6 +52,8 @@ def badge_color(score: float) -> str:
         return "#9a6700"
     if score <= 4.0:
         return "#d29922"
+    if score <= 5.0:
+        return "#db6d28"
     return "#cf222e"
 
 
@@ -119,9 +122,9 @@ def render_snapshot_markdown(row: dict[str, object]) -> str:
             "",
             "| Metric | Value |",
             "| --- | --- |",
-            f"| Mean autonomy score | `{float(row['mean_computed_score']):.2f} / 5` |",
+            f"| Mean autonomy score | `{float(row['mean_computed_score']):.2f} / {MAX_SCORE}` |",
             f"| Mean complexity | `{float(row['mean_computed_complexity']):.2f} / commit` |",
-            f"| Mean score per top-level bullet | `{float(row['mean_score_per_bullet']):.2f} / 5` |",
+            f"| Mean score per top-level bullet | `{float(row['mean_score_per_bullet']):.2f} / {MAX_SCORE}` |",
             f"| History covered | `{commits}` {commit_label} across `{subsystems}` {subsystem_label} |",
             SNAPSHOT_END,
         ]
@@ -147,7 +150,7 @@ def main() -> int:
     score = float(row["mean_computed_score"])
     complexity = float(row["mean_computed_complexity"])
     commits = int(row["commit_count"])
-    score_text = f"{score:.2f}/5"
+    score_text = f"{score:.2f}/{MAX_SCORE}"
     title = f"Autonomy golf: {score_text} mean score, {complexity:.2f} mean complexity across {commits} commits"
     svg = render_svg(score_text=score_text, color=badge_color(score), title=title)
     args.output.write_text(svg)

@@ -26,6 +26,7 @@ SCORE_PRECISION = 2
 ROOT = Path(__file__).resolve().parents[1]
 
 CATEGORY_ORDER = (
+    "Fully human",
     "Human-driven",
     "Human-directed, AI-shaped",
     "AI-identified within brief, human-shaped",
@@ -35,6 +36,7 @@ CATEGORY_ORDER = (
 )
 
 CATEGORY_WEIGHTS = {
+    "Fully human": 6,
     "Human-driven": 5,
     "Human-directed, AI-shaped": 4,
     "AI-identified within brief, human-shaped": 3,
@@ -69,6 +71,7 @@ class Entry:
     date_label: str | None
     current_section: str | None = None
     category_counts: dict[str, int] | None = None
+    nested_bonus_count: int = 0
 
     def __post_init__(self) -> None:
         if self.category_counts is None:
@@ -83,6 +86,10 @@ class Entry:
         return sum(self.category_counts[category] * CATEGORY_WEIGHTS[category] for category in CATEGORY_ORDER)
 
     @property
+    def computed_complexity(self) -> int:
+        return self.total_points + self.nested_bonus_count
+
+    @property
     def computed_score(self) -> float:
         if self.top_level_bullet_count == 0:
             return 0.0
@@ -94,7 +101,7 @@ class Entry:
 
     @property
     def complexity_delta(self) -> int:
-        return self.effective_header_complexity - self.total_points
+        return self.effective_header_complexity - self.computed_complexity
 
     @property
     def has_explicit_complexity(self) -> bool:
@@ -137,12 +144,13 @@ class Entry:
             "computed_score": self.computed_score,
             "score_delta": self.score_delta,
             "header_complexity": self.effective_header_complexity,
-            "computed_complexity": self.total_points,
+            "computed_complexity": self.computed_complexity,
             "complexity_delta": self.complexity_delta,
             "has_explicit_complexity": self.has_explicit_complexity,
             "is_unreleased": self.is_unreleased,
             "top_level_bullet_count": self.top_level_bullet_count,
             "total_points": self.total_points,
+            "nested_bonus_count": self.nested_bonus_count,
         }
         for category in CATEGORY_ORDER:
             slug = slugify(category)
@@ -235,6 +243,13 @@ def parse_changelog(path: Path) -> list[Entry]:
             continue
         if line.startswith("- ") and current_entry.current_section in CATEGORY_WEIGHTS:
             current_entry.category_counts[current_entry.current_section] += 1
+            continue
+        if (
+            line.startswith("  - ")
+            and current_entry.current_section in CATEGORY_WEIGHTS
+            and CATEGORY_WEIGHTS[current_entry.current_section] >= 3
+        ):
+            current_entry.nested_bonus_count += 1
 
     if current_entry is not None:
         entries.append(current_entry)
@@ -254,6 +269,8 @@ def build_daily_rows(entries: list[Entry], include_unreleased: bool) -> list[dic
                 "date": key,
                 "commit_count": 0,
                 "top_level_bullet_count": 0,
+                "total_points": 0,
+                "total_nested_bonus": 0,
                 "total_complexity": 0,
                 "total_header_score": 0,
                 "total_computed_score": 0,
@@ -268,7 +285,9 @@ def build_daily_rows(entries: list[Entry], include_unreleased: bool) -> list[dic
         row = grouped[key]
         row["commit_count"] += 1
         row["top_level_bullet_count"] += entry.top_level_bullet_count
-        row["total_complexity"] += entry.total_points
+        row["total_points"] += entry.total_points
+        row["total_nested_bonus"] += entry.nested_bonus_count
+        row["total_complexity"] += entry.computed_complexity
         row["total_header_score"] += entry.header_score
         row["total_computed_score"] += entry.computed_score
         row["total_score_delta"] += entry.score_delta
@@ -285,7 +304,7 @@ def build_daily_rows(entries: list[Entry], include_unreleased: bool) -> list[dic
         commit_count = row["commit_count"]
         row["mean_header_score"] = round_score(row["total_header_score"] / commit_count)
         row["mean_computed_score"] = round_score(row["total_computed_score"] / commit_count)
-        row["mean_score_per_bullet"] = round_score(row["total_complexity"] / row["top_level_bullet_count"])
+        row["mean_score_per_bullet"] = round_score(row["total_points"] / row["top_level_bullet_count"])
         row["mean_header_complexity"] = round_score(row["total_header_complexity"] / commit_count)
         row["mean_computed_complexity"] = round_score(row["total_complexity"] / commit_count)
         rows.append(row)
@@ -296,6 +315,8 @@ def init_grouped_score_row(**fields: object) -> dict[str, object]:
     row = {
         "commit_count": 0,
         "top_level_bullet_count": 0,
+        "total_points": 0,
+        "total_nested_bonus": 0,
         "total_complexity": 0,
         "total_header_score": 0,
         "total_computed_score": 0,
@@ -314,7 +335,9 @@ def init_grouped_score_row(**fields: object) -> dict[str, object]:
 def accumulate_grouped_score_row(row: dict[str, object], entry: Entry) -> None:
     row["commit_count"] += 1
     row["top_level_bullet_count"] += entry.top_level_bullet_count
-    row["total_complexity"] += entry.total_points
+    row["total_points"] += entry.total_points
+    row["total_nested_bonus"] += entry.nested_bonus_count
+    row["total_complexity"] += entry.computed_complexity
     row["total_header_score"] += entry.header_score
     row["total_computed_score"] += entry.computed_score
     row["total_score_delta"] += entry.score_delta
@@ -334,7 +357,7 @@ def finalize_grouped_rows(grouped: dict[object, dict[str, object]], sort_keys: l
         commit_count = row["commit_count"]
         row["mean_header_score"] = round_score(row["total_header_score"] / commit_count)
         row["mean_computed_score"] = round_score(row["total_computed_score"] / commit_count)
-        row["mean_score_per_bullet"] = round_score(row["total_complexity"] / row["top_level_bullet_count"])
+        row["mean_score_per_bullet"] = round_score(row["total_points"] / row["top_level_bullet_count"])
         row["mean_header_complexity"] = round_score(row["total_header_complexity"] / commit_count)
         row["mean_computed_complexity"] = round_score(row["total_complexity"] / commit_count)
         rows.append(row)
@@ -460,7 +483,7 @@ def main() -> int:
                 commit = entry.commit or "unreleased"
                 print(
                     f"complexity mismatch: {commit} {entry.title!r} "
-                    f"header={entry.effective_header_complexity} computed={entry.total_points}",
+                    f"header={entry.effective_header_complexity} computed={entry.computed_complexity}",
                     file=sys.stderr,
                 )
         if unscoped:

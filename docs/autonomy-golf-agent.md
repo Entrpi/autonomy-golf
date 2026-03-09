@@ -1,146 +1,115 @@
 # Autonomy Golf Agent Integration
 
-## Document Role
+Use this when an agent is asked to install autonomy golf into an existing project.
 
-This is the implementation brief for a coding agent that has been asked to install autonomy golf in a project.
+Canonical source: [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf)
 
-If you want the public rationale and scoring philosophy, read [autonomy-golf.md](autonomy-golf.md).
-If autonomy golf is already installed and you just need the maintenance loop, read [autonomy-golf-checklist.md](autonomy-golf-checklist.md).
-If you want the concrete starter template and parser input shape, read [../CHANGELOG.md](../CHANGELOG.md).
+Before making changes:
 
-This document is for a coding agent that has been asked to integrate autonomy golf into an existing software project.
+- read [autonomy-golf.md](autonomy-golf.md) for the manifesto, public framing, and intended purpose
+- read [../CHANGELOG.md](../CHANGELOG.md) for the canonical template and parser-facing shape
+- read [autonomy-golf-checklist.md](autonomy-golf-checklist.md) for the maintenance loop
 
-It is meant to be a reusable integration brief, not a project-specific operating prompt. The objective is not just to add a badge. The objective is to install a disciplined loop for recording who drove changes, how autonomous the work actually was, and whether that autonomy is improving over time.
+Related files:
 
-The system works best when `CHANGELOG.md` is agent-managed. That does not mean unreadable machine sludge. It means the changelog is maintained in a regular structure that serves two jobs at once:
+- public explainer / portable manifesto: [autonomy-golf.md](autonomy-golf.md)
+- maintenance loop: [autonomy-golf-checklist.md](autonomy-golf-checklist.md)
+- canonical changelog template and parser input shape: [../CHANGELOG.md](../CHANGELOG.md)
+- front-door overview and badge flow: [../README.md](../README.md)
 
-- readable engineering history for humans
-- reliable input for parsers, rollups, badges, and later charts
+## What To Install
 
-When adopting autonomy golf, start from the working infrastructure already present in this repository rather than designing a fresh system from scratch. The intended path is to copy or adapt:
+Start from the working bundle in the canonical repository. Copy or adapt:
 
-- [../CHANGELOG.md](../CHANGELOG.md)
-- [../tools/changelog_scores.py](../tools/changelog_scores.py)
-- [../tools/render_autonomy_badge.py](../tools/render_autonomy_badge.py) for both the badge and the README snapshot block
-- [autonomy-golf.md](autonomy-golf.md)
-- this document
+- `CHANGELOG.md`
+- `docs/autonomy-golf.md`
+- `docs/autonomy-golf-agent.md`
+- `docs/autonomy-golf-checklist.md`
+- `tools/changelog_scores.py`
+- `tools/render_autonomy_badge.py`
 
-## Goal
+The goal is not just to add a badge. The goal is to install a disciplined loop that helps the project move toward total automation in a way that stays fun to follow and meaningful to trust. Record:
 
-Add a lightweight autonomy-accounting system to the project so that:
+- who drove each change
+- how autonomous it really was
+- how well it was grounded
+- what the change means, why it was needed, and what it is for
+- whether the project is becoming more autonomous over time
 
-- each landed change records its provenance explicitly
-- the project can compute a bounded autonomy score over time
-- the history can be broken down by subsystem
-- the project can publish a project-level badge or snapshot
-- the accounting is conservative enough that lower scores remain meaningful
+## Score Model
 
-## Core Mechanics
+Use the score ladder and header conventions already defined in [../CHANGELOG.md](../CHANGELOG.md). The essential scale is:
 
-Autonomy golf uses one scored provenance tier per top-level changelog bullet:
+| Tier | Score |
+| --- | ---: |
+| `Fully human` | `6` |
+| `Human-driven` | `5` |
+| `Human-directed, AI-shaped` | `4` |
+| `AI-identified within brief, human-shaped` | `3` |
+| `AI-identified within brief, human-approved` | `2` |
+| `Self-initiated, human-approved` | `1` |
+| `Fully autonomous` | `0` |
 
-- `Human-driven (5)`
-- `Human-directed, AI-shaped (4)`
-- `AI-identified within brief, human-shaped (3)`
-- `AI-identified within brief, human-approved (2)`
-- `Self-initiated, human-approved (1)`
-- `Fully autonomous (0)`
+`Grounding` is separate and unscored. Lower `score` is better.
+`complexity` should follow the canonical parser rule: sum the top-level provenance weights, then add `+1` for each nested sub-bullet under provenance items scored `3` or higher.
 
-`Grounding` is not scored.
+## Hard Rules
 
-Each commit entry should expose:
-
-- `score`: the arithmetic mean of the top-level provenance bullet weights for that commit
-- `complexity`: the summed weight of those same top-level bullets
-
-`score` is the main autonomy signal. Lower is better.
-
-`complexity` is a secondary scope signal. It shows how much separately scored provenance surface the commit covered. Omit it when it is numerically identical to `score`.
-
-## Why Grounding Matters
-
-Treat `Grounding` as a first-class validation record, not as leftover metadata.
-
-Provenance and grounding answer different questions:
-
-- provenance: who drove the change
-- grounding: what evidence supports the change
-
-Keep them separate on purpose.
-
-- do not let strong validation make a change look more autonomous than it was
-- do not let weak validation disappear behind a low autonomy score
-- do use grounding to support data-driven decisions about what to keep, trust, or revert
-
-The practical meaning is simple: an autonomy-golf system is only as useful as its grounding discipline. If the score is carefully tracked but the evidence is loose, the project still does not know which changes deserve confidence.
-
-One useful ideal for grounding to track is meaningful test coverage. Not every change maps cleanly to a coverage percentage, and not every project should worship coverage as a proxy for correctness, but where automated tests are the right validation surface, pushing toward complete or near-complete coverage is a legitimate goal. Grounding is the place to record whether a change moved that ideal forward, held the line, or skipped it for a good reason.
-
-## Required Rules
-
-The system only works if the accounting stays strict.
-
+- Lean on the existing template and checklist instead of inventing local variants.
 - Bias toward under-claiming autonomy.
-- If provenance is ambiguous, choose the more conservative tier.
 - Score only top-level provenance bullets.
-- Put directly derivative same-tier details under nested bullets so they stay visible without inflating the score.
-- Keep `Grounding` separate from provenance, and use it to record the real strength of validation.
-- Do not let `agent suggested` quietly become `fully autonomous`.
+- Keep directly derivative same-tier details nested.
+- Treat meaning, motivation, and purpose as first-class changelog content, not optional narrative garnish.
+- Keep `Grounding` separate from provenance.
+- Do not let “agent suggested” drift into `Fully autonomous`.
+- Keep the changelog readable to humans and stable for parsers at the same time.
 
-## Commit And Changelog Shape
+## Changelog Contract
 
-Use Linux-kernel-style subsystem headers:
+Do not restate the changelog shape from memory. Use [../CHANGELOG.md](../CHANGELOG.md) as the canonical template for:
 
-```text
-train: Add train and wall time budget modes
-checkpoints: Benchmark resume-ready checkpoint latency
-changelog: Add subsystem-scoped commit headers
-```
+- subsystem-prefixed headers
+- provenance section labels
+- `score` and optional `complexity`
+- `Grounding`
+- the lag-by-one commit-ID model under `Unreleased`
 
-The dominant subsystem should be used as the prefix. Only use a combined subsystem when one label would be misleading.
+## Grounding
 
-Each changelog entry should include:
+Grounding is the evidence layer.
 
-- a header with `subsystem: summary`
-- the bounded `score`
-- optional `complexity`
-- one or more provenance sections
-- a `Grounding` section with files, checks, and measurements
+Record:
 
-This structure is functional, not cosmetic. If the agent drifts into free-form prose, the accounting stops being trustworthy. If it drifts into parser-first sludge, the history stops being useful to humans. The target is both at once.
+- files changed
+- checks run
+- measurements, if any
 
-## Working Loop
+Use the strongest practical grounding the change deserves. If stronger validation is not practical, say so plainly. Meaningful test coverage is one useful grounding dimension where automated tests are the right validation surface.
 
-This is the loop to follow when integrating or maintaining autonomy golf in a project:
+## Install Loop
 
-1. Make or review a change.
-2. Decide what actually drove the change.
-3. Record that provenance in the changelog conservatively.
-4. Record the grounding strength honestly so later decisions can be based on evidence rather than memory or enthusiasm.
-5. Update or regenerate the score outputs.
-6. Publish the project-level snapshot or badge.
-7. Use the results to decide where autonomy is still weak.
+1. Start from [../README.md](../README.md) to understand the visible project shape.
+2. Copy or adapt [../CHANGELOG.md](../CHANGELOG.md), [autonomy-golf.md](autonomy-golf.md), and [autonomy-golf-checklist.md](autonomy-golf-checklist.md).
+3. Copy or adapt [../tools/changelog_scores.py](../tools/changelog_scores.py) and [../tools/render_autonomy_badge.py](../tools/render_autonomy_badge.py).
+4. Add a README badge or snapshot driven by the parser output.
+5. If the project already has change-management hooks, wire autonomy golf into that path instead of inventing a parallel ritual. In practice, the best place is usually the pre-commit or pre-merge flow.
+6. Tell future agents to maintain the system through the checklist, not ad hoc.
 
-The agent should treat changelog maintenance as part of the change itself, not as cleanup afterward.
+## Maintenance Handoff
 
-In practice, the fastest path is usually:
+Once autonomy golf is installed, tell agents to read and follow [autonomy-golf-checklist.md](autonomy-golf-checklist.md).
 
-1. adapt the changelog structure from this repository
-2. adapt `tools/changelog_scores.py` to the target repo layout if needed
-3. adapt `tools/render_autonomy_badge.py` for the target README
-4. add a short project-specific operating prompt that tells future agents how to keep the system current
+That checklist should drive the normal loop. Do not duplicate it into a project-specific prompt unless the project genuinely needs extra rules.
 
 ## Suggested Prompt
 
-The fastest way to start is to give the agent a prompt like:
-
-> Integrate autonomy golf into this project. Reuse the changelog template, score parser, and badge renderer from the canonical autonomy-golf repository. Add a conservative provenance-scored changelog format, subsystem-scoped commit headers, a project-level badge or summary in the README, and agent guidance for keeping the system updated. Bias toward under-claiming autonomy, keep grounding separate from provenance, and make the output suitable for later plotting by day and subsystem.
+> Integrate autonomy golf into this project. Reuse the changelog template, parser, badge renderer, and docs from https://github.com/Entrpi/autonomy-golf. Follow the canonical `CHANGELOG.md` shape, use the checklist for maintenance rules, keep grounding separate from provenance, and bias toward under-claiming autonomy.
 
 ## Success Condition
 
 The integration is successful when the project can answer, with evidence:
 
 - how autonomous recent work actually was
-- which subsystems are improving
-- whether the accounting is honest enough to trust
-- whether the score is moving toward `Fully autonomous` over time
+- which subsystems still need human direction
+- whether the accounting is strict enough to trust
+- whether the project is moving toward fuller autonomy over time
