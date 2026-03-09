@@ -59,7 +59,7 @@ Each top-level provenance bullet in a changelog entry gets one score:
 Each commit entry then exposes:
 
 - `score`: the mean of those top-level provenance weights
-- `complexity`: the sum of those top-level provenance weights, plus `+1` for each nested sub-bullet under provenance items scored `3` or higher
+- `complexity`: the sum of those top-level provenance weights, plus `+1` for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines
 
 `score` is the main autonomy signal. `complexity` is a secondary scope signal.
 

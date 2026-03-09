@@ -47,6 +47,7 @@ CATEGORY_WEIGHTS = {
 
 CATEGORY_HEADING_RE = re.compile(r"^(?P<label>.+?)(?: \((?P<score>\d+)\))?$")
 SUBSYSTEM_TITLE_RE = re.compile(r"^(?P<subsystem>[a-z0-9][a-z0-9_./-]*): (?P<summary>.+)$")
+NARRATIVE_PREFIXES = ("Meaning:", "Motivation:", "Purpose:")
 
 EM_DASH = "\u2014"
 HEADER_RE = re.compile(
@@ -218,6 +219,11 @@ def parse_entry_header(line: str, current_section: str) -> Entry:
     )
 
 
+def is_narrative_nested_bullet(line: str) -> bool:
+    stripped = line[4:].strip()
+    return any(stripped.startswith(prefix) for prefix in NARRATIVE_PREFIXES)
+
+
 def parse_changelog(path: Path) -> list[Entry]:
     entries: list[Entry] = []
     current_top_level: str | None = None
@@ -248,6 +254,7 @@ def parse_changelog(path: Path) -> list[Entry]:
             line.startswith("  - ")
             and current_entry.current_section in CATEGORY_WEIGHTS
             and CATEGORY_WEIGHTS[current_entry.current_section] >= 3
+            and not is_narrative_nested_bullet(line)
         ):
             current_entry.nested_bonus_count += 1
 

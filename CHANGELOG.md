@@ -17,13 +17,43 @@ Each entry should describe not just what changed, but also the change's meaning,
 A short nested `Meaning:`, `Motivation:`, `Purpose:` trio is a good default way to make that explicit when an entry would otherwise read like a file or task inventory.
 Top-level provenance bullets are the scored units. If a point is directly derivative of a main bullet and stays at the same autonomy level, record it as a nested sub-bullet so it remains visible without adding score.
 Each commit header should use a Linux-kernel-style subsystem prefix: `subsystem: summary`. Use the dominant subsystem rather than a file inventory. Only use a combined prefix such as `docs/tools:` when the change is genuinely cross-cutting and one subsystem label would be misleading.
-Each commit entry should also show an autonomy golf score in the header. Score each provenance bullet as `Fully human = 6`, `Human-driven = 5`, `Human-directed, AI-shaped = 4`, `AI-identified within brief, human-shaped = 3`, `AI-identified within brief, human-approved = 2`, `Self-initiated, human-approved = 1`, and `Fully autonomous = 0`. `Grounding` does not contribute to the score because validation strength should stay separate from autonomy level. The header `score` is the arithmetic mean of the top-level provenance bullet weights for that entry, rounded to two decimals, so each commit stays on a bounded `0..6` spectrum. The summed value is preserved separately in the header as `complexity`, which now means top-level provenance weights plus `+1` for each nested sub-bullet under provenance items scored `3` or higher. When `complexity` is numerically identical to the bounded `score`, omit it from the header as redundant; the parser treats omission as an implicit equality.
+Each commit entry should also show an autonomy golf score in the header. Score each provenance bullet as `Fully human = 6`, `Human-driven = 5`, `Human-directed, AI-shaped = 4`, `AI-identified within brief, human-shaped = 3`, `AI-identified within brief, human-approved = 2`, `Self-initiated, human-approved = 1`, and `Fully autonomous = 0`. `Grounding` does not contribute to the score because validation strength should stay separate from autonomy level. The header `score` is the arithmetic mean of the top-level provenance bullet weights for that entry, rounded to two decimals, so each commit stays on a bounded `0..6` spectrum. The summed value is preserved separately in the header as `complexity`, which now means top-level provenance weights plus `+1` for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines. When `complexity` is numerically identical to the bounded `score`, omit it from the header as redundant; the parser treats omission as an implicit equality.
 Entries should omit empty provenance sections rather than spelling out `None in this entry.`
 If an entry has no measurements yet, it should say so explicitly.
 
 ## Unreleased
 
-### New commit — changelog: Tighten maintenance checklist and canonical references — score `4` — complexity `23`
+### New commit — badge: Add house golf term to generated badge — score `4` — complexity `7`
+
+**Human-directed, AI-shaped (4)**
+
+- Requested that the badge itself adopt the house golf language, while leaving the exact badge rendering choice to the agent.
+  - Meaning: the headline project badge should speak the same playful autonomy-golf language as the manifesto, not just expose a raw number.
+  - Motivation: the canonical repo now defines house terms like `eagle`, `birdie`, and `par`, but the badge was still numerically literal.
+  - Purpose: make the top-level project badge feel more like the game the docs describe, without losing the precise numeric score.
+  - Updated the badge renderer so it maps the project mean score to the nearest house term and shows that term alongside the numeric score.
+  - Added a small hole flag graphic to the badge so the visual itself carries a bit of the golf theme, not just the text.
+  - Exempted `Meaning:`, `Motivation:`, and `Purpose:` narrative sub-bullets from complexity so explanatory context does not inflate the scope signal.
+
+**Grounding**
+
+- Files:
+  - `CHANGELOG.md`
+  - `tools/render_autonomy_badge.py`
+  - `docs/autonomy-golf-badge.svg`
+- Validation:
+  - `python3 tools/render_autonomy_badge.py`
+- Measurements:
+  - This is badge/rendering work, not a runtime optimization, so there are no performance measurements.
+  - Current parser summary (`python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`):
+
+    | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
+    | --- | ---: | ---: | ---: | ---: | ---: |
+    | `including_unreleased` | `3` | `2` | `3.67` | `13.33` | `3.50` |
+
+## Committed History
+
+### March 10, 2026 — `0e70c0d` — changelog: Tighten maintenance checklist and canonical references — score `4` — complexity `20`
 
 **Human-directed, AI-shaped (4)**
 
@@ -69,11 +99,9 @@ If an entry has no measurements yet, it should say so explicitly.
 
     | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
     | --- | ---: | ---: | ---: | ---: | ---: |
-    | `including_unreleased` | `2` | `1` | `3.50` | `19.50` | `3.33` |
+    | `including_unreleased` | `2` | `1` | `3.50` | `16.50` | `3.33` |
 
-## Committed History
-
-### March 10, 2026 — `393a4be` — changelog: Seed canonical autonomy-golf repository — score `3` — complexity `16`
+### March 10, 2026 — `393a4be` — changelog: Seed canonical autonomy-golf repository — score `3` — complexity `13`
 
 **Human-directed, AI-shaped (4)**
 
@@ -119,4 +147,4 @@ If an entry has no measurements yet, it should say so explicitly.
 
     | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
     | --- | ---: | ---: | ---: | ---: | ---: |
-    | `including_unreleased` | `1` | `1` | `3.00` | `16.00` | `3.00` |
+    | `including_unreleased` | `1` | `1` | `3.00` | `13.00` | `3.00` |

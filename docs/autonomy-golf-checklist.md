@@ -29,6 +29,7 @@ If you need to compare your local setup against the canonical source, use [Entrp
 3. Add the bounded `score`.
 4. Add `complexity` only when it differs from `score`.
    - compute it as the sum of top-level provenance weights, plus `+1` for each nested sub-bullet under provenance items scored `3` or higher
+   - do not count `Meaning:`, `Motivation:`, or `Purpose:` narrative lines toward complexity
 5. Explain the change's meaning, motivation, and intended purpose.
    - a short nested `Meaning:`, `Motivation:`, `Purpose:` trio is the default pattern when the entry would otherwise read like a task list
 6. Record:

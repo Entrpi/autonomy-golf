@@ -51,7 +51,7 @@ Use the score ladder and header conventions already defined in [../CHANGELOG.md]
 | `Fully autonomous` | `0` |
 
 `Grounding` is separate and unscored. Lower `score` is better.
-`complexity` should follow the canonical parser rule: sum the top-level provenance weights, then add `+1` for each nested sub-bullet under provenance items scored `3` or higher.
+`complexity` should follow the canonical parser rule: sum the top-level provenance weights, then add `+1` for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines.
 
 ## Hard Rules
 

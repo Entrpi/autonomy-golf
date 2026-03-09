@@ -25,6 +25,15 @@ BADGE_HEIGHT = 20
 MAX_SCORE = 6
 SNAPSHOT_START = "<!-- autonomy-golf-snapshot:start -->"
 SNAPSHOT_END = "<!-- autonomy-golf-snapshot:end -->"
+HOUSE_TERMS = {
+    0: "hole in one",
+    1: "albatross",
+    2: "eagle",
+    3: "birdie",
+    4: "par",
+    5: "bogey",
+    6: "double bogey",
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -61,6 +70,11 @@ def estimate_width(text: str) -> int:
     return max(46, int(len(text) * 6.8) + 16)
 
 
+def house_term(score: float) -> str:
+    nearest = min(MAX_SCORE, max(0, int(score + 0.5)))
+    return HOUSE_TERMS[nearest]
+
+
 def read_overall_metrics() -> dict[str, object]:
     result = subprocess.run(
         [
@@ -86,7 +100,7 @@ def read_overall_metrics() -> dict[str, object]:
 def render_svg(*, score_text: str, color: str, title: str) -> str:
     value_width = estimate_width(score_text)
     total_width = LABEL_WIDTH + value_width
-    label_x = LABEL_WIDTH / 2
+    label_x = LABEL_WIDTH / 2 + 8
     value_x = LABEL_WIDTH + value_width / 2
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{total_width}" height="{BADGE_HEIGHT}" role="img" aria-label="{title}">
   <title>{title}</title>
@@ -101,6 +115,11 @@ def render_svg(*, score_text: str, color: str, title: str) -> str:
     <rect width="{LABEL_WIDTH}" height="{BADGE_HEIGHT}" fill="#24292f"/>
     <rect x="{LABEL_WIDTH}" width="{value_width}" height="{BADGE_HEIGHT}" fill="{color}"/>
     <rect width="{total_width}" height="{BADGE_HEIGHT}" fill="url(#badge-fill)"/>
+  </g>
+  <g fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="10" y1="5" x2="10" y2="15"/>
+    <path d="M10 5 L17 7.5 L10 10 Z" fill="#fff" stroke="none"/>
+    <path d="M7.5 15.5 Q10 13.8 12.5 15.5" opacity="0.85"/>
   </g>
   <g fill="#fff" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" font-size="11">
     <text x="{label_x}" y="15">autonomy golf</text>
@@ -150,8 +169,12 @@ def main() -> int:
     score = float(row["mean_computed_score"])
     complexity = float(row["mean_computed_complexity"])
     commits = int(row["commit_count"])
-    score_text = f"{score:.2f}/{MAX_SCORE}"
-    title = f"Autonomy golf: {score_text} mean score, {complexity:.2f} mean complexity across {commits} commits"
+    term = house_term(score)
+    score_text = f"{term} {score:.2f}/{MAX_SCORE}"
+    title = (
+        f"Autonomy golf: {term}, {score:.2f}/{MAX_SCORE} mean score, "
+        f"{complexity:.2f} mean complexity across {commits} commits"
+    )
     svg = render_svg(score_text=score_text, color=badge_color(score), title=title)
     args.output.write_text(svg)
     if not args.skip_readme:

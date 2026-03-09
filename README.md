@@ -40,10 +40,10 @@ Current project snapshot from [CHANGELOG.md](CHANGELOG.md):
 
 | Metric | Value |
 | --- | --- |
-| Mean autonomy score | `3.50 / 6` |
-| Mean complexity | `19.50 / commit` |
-| Mean score per top-level bullet | `3.33 / 6` |
-| History covered | `2` commits across `1` subsystem |
+| Mean autonomy score | `3.67 / 6` |
+| Mean complexity | `13.33 / commit` |
+| Mean score per top-level bullet | `3.50 / 6` |
+| History covered | `3` commits across `2` subsystems |
 <!-- autonomy-golf-snapshot:end -->
 
 ## Document Map
@@ -71,7 +71,7 @@ Once autonomy golf is already installed in a project, the shorter maintenance in
 
 - the central game is to push the project toward total automation in a way that stays enjoyable, legible, and worth trusting
 - `score` is the bounded autonomy signal on a `0..6` scale. Lower is better.
-- `complexity` is the scope signal: top-level provenance weights plus a `+1` bonus for each nested sub-bullet under provenance items scored `3` or higher.
+- `complexity` is the scope signal: top-level provenance weights plus a `+1` bonus for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines.
 - top-level provenance bullets are the scored units
 - good entries do more than log tasks; they build explicit consensus on a change's meaning, motivation, and purpose
 - `Grounding` is the separate validation signal: files changed, checks run, and measured effects. It is intentionally unscored so validation strength stays distinct from autonomy level.
