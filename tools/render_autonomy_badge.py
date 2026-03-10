@@ -84,7 +84,7 @@ def read_overall_metrics() -> dict[str, object]:
             "overall",
             "--format",
             "json",
-            "--include-unreleased",
+            "--include-latest",
         ],
         check=True,
         capture_output=True,

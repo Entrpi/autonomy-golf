@@ -21,9 +21,37 @@ Each commit entry should also show an autonomy golf score in the header. Score e
 Entries should omit empty provenance sections rather than spelling out `None in this entry.`
 If an entry has no measurements yet, it should say so explicitly.
 
-## Unreleased
+## Latest
 
-### New commit — docs: Tighten canonical README framing — score `4` — complexity `8`
+## Committed History
+
+### March 10, 2026 — `6e3d4ba` — changelog: Rename active section to Latest — score `4` — complexity `6`
+
+**Human-directed, AI-shaped (4)**
+
+- Requested that the canonical autonomy-golf repo rename the active changelog section to `Latest` and make the CLI/tooling use that name too.
+  - Meaning: the template repo should model one canonical section name and one matching parser interface for adopters to copy.
+  - Motivation: `Latest` reads more naturally than `Unreleased`, and the canonical template should model that clearer wording directly.
+  - Purpose: keep the canonical repo crisp so downstream adopters copy one clean pattern instead of inheriting alias baggage.
+  - Renamed the parser and renderer interface from `--include-unreleased` to `--include-latest`, and changed the emitted fields and scope labels from `is_unreleased` / `including_unreleased` to `is_latest` / `including_latest`.
+  - Updated the canonical changelog, README commands, and checklist/agent instructions to use `Latest` and `--include-latest` consistently.
+
+**Grounding**
+
+- Files:
+  - `CHANGELOG.md`
+  - `README.md`
+  - `docs/autonomy-golf-agent.md`
+  - `docs/autonomy-golf-checklist.md`
+  - `tools/changelog_scores.py`
+  - `tools/render_autonomy_badge.py`
+- Validation:
+  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-latest --verify`
+  - `python3 tools/render_autonomy_badge.py`
+- Measurements:
+  - This is governance and scoring-tooling work, not a runtime optimization, so there are no performance measurements.
+
+### March 10, 2026 — `fbab975` — docs: Tighten canonical README and install guidance — score `4` — complexity `8`
 
 **Human-directed, AI-shaped (4)**
 
@@ -41,14 +69,13 @@ If an entry has no measurements yet, it should say so explicitly.
 - Files:
   - `README.md`
   - `CHANGELOG.md`
+  - `docs/autonomy-golf-agent.md`
 - Validation:
-  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-unreleased --verify`
-  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`
+  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-latest --verify`
+  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-latest`
   - `python3 tools/render_autonomy_badge.py`
 - Measurements:
   - This is README framing work, not a runtime optimization, so there are no performance measurements.
-
-## Committed History
 
 ### March 10, 2026 — `55c401c` — badge: Add house golf term to generated badge — score `4` — complexity `7`
 
@@ -72,11 +99,11 @@ If an entry has no measurements yet, it should say so explicitly.
   - `python3 tools/render_autonomy_badge.py`
 - Measurements:
   - This is badge/rendering work, not a runtime optimization, so there are no performance measurements.
-  - Current parser summary (`python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`):
+  - Current parser summary (`python3 tools/changelog_scores.py --group-by overall --format csv --include-latest`):
 
     | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
     | --- | ---: | ---: | ---: | ---: | ---: |
-    | `including_unreleased` | `3` | `2` | `3.67` | `13.33` | `3.50` |
+    | `including_latest` | `3` | `2` | `3.67` | `13.33` | `3.50` |
 
 ### March 10, 2026 — `0e70c0d` — changelog: Tighten maintenance checklist and canonical references — score `4` — complexity `20`
 
@@ -100,7 +127,7 @@ If an entry has no measurements yet, it should say so explicitly.
   - Changed `complexity` so nested sub-bullets under provenance items scored `3` or higher each add `+1`, which better reflects elaborated high-agency change structure.
   - Tightened the maintenance instructions so they explicitly cover derived score recalculation, generated README snapshot ownership, and targeted validation when the parser or badge renderer changes.
   - Tightened the checklist and agent brief around the exact in-flight maintenance loop this repo exercised: update provenance, recompute derived changelog values, refresh generated outputs, and verify the parser still agrees.
-  - Added the explicit lag-by-one commit-ID rule: unreleased work stays as `New commit` until the hash exists, then gets stamped into committed history and replaced by a fresh unreleased slot only if more work continues.
+  - Added the explicit lag-by-one commit-ID rule: latest in-flight work stays as `New commit` until the hash exists, then gets stamped into committed history and replaced by a fresh latest slot only if more work continues.
   - Tightened the changelog entry itself so it demonstrates explicit meaning, motivation, and purpose instead of only requiring them.
 
 **Grounding**
@@ -115,16 +142,16 @@ If an entry has no measurements yet, it should say so explicitly.
   - `tools/render_autonomy_badge.py`
 - Validation:
   - `python3 -m py_compile tools/changelog_scores.py tools/render_autonomy_badge.py`
-  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-unreleased --verify`
-  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`
+  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-latest --verify`
+  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-latest`
   - `python3 tools/render_autonomy_badge.py`
 - Measurements:
   - This is follow-up documentation and maintenance work, not a runtime optimization, so there are no performance measurements.
-  - Current parser summary (`python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`):
+  - Current parser summary (`python3 tools/changelog_scores.py --group-by overall --format csv --include-latest`):
 
     | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
     | --- | ---: | ---: | ---: | ---: | ---: |
-    | `including_unreleased` | `2` | `1` | `3.50` | `16.50` | `3.33` |
+    | `including_latest` | `2` | `1` | `3.50` | `16.50` | `3.33` |
 
 ### March 10, 2026 — `393a4be` — changelog: Seed canonical autonomy-golf repository — score `3` — complexity `13`
 
@@ -163,13 +190,13 @@ If an entry has no measurements yet, it should say so explicitly.
   - `tools/render_autonomy_badge.py`
 - Validation:
   - `python3 -m py_compile tools/changelog_scores.py tools/render_autonomy_badge.py`
-  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-unreleased --verify`
-  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`
+  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-latest --verify`
+  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-latest`
   - `python3 tools/render_autonomy_badge.py`
 - Measurements:
   - This is scaffolding and documentation work, not a runtime optimization, so there are no performance measurements.
-  - Parser summary at commit time (`python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`):
+  - Parser summary at commit time (`python3 tools/changelog_scores.py --group-by overall --format csv --include-latest`):
 
     | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
     | --- | ---: | ---: | ---: | ---: | ---: |
-    | `including_unreleased` | `1` | `1` | `3.00` | `13.00` | `3.00` |
+    | `including_latest` | `1` | `1` | `3.00` | `13.00` | `3.00` |

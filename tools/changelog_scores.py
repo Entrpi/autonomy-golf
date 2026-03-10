@@ -4,10 +4,10 @@ Parse CHANGELOG.md autonomy scores into plotting-friendly rows.
 
 Examples:
     python3 tools/changelog_scores.py --group-by day --format csv
-    python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased
+    python3 tools/changelog_scores.py --group-by overall --format csv --include-latest
     python3 tools/changelog_scores.py --group-by subsystem --format csv
     python3 tools/changelog_scores.py --group-by day-subsystem --format csv
-    python3 tools/changelog_scores.py --group-by entry --format json --include-unreleased --verify
+    python3 tools/changelog_scores.py --group-by entry --format json --include-latest --verify
 """
 
 from __future__ import annotations
@@ -24,6 +24,7 @@ from pathlib import Path
 
 SCORE_PRECISION = 2
 ROOT = Path(__file__).resolve().parents[1]
+LATEST_SECTION_NAME = "Latest"
 
 CATEGORY_ORDER = (
     "Fully human",
@@ -119,8 +120,8 @@ class Entry:
         )
 
     @property
-    def is_unreleased(self) -> bool:
-        return self.section == "Unreleased"
+    def is_latest(self) -> bool:
+        return self.section == LATEST_SECTION_NAME
 
     @property
     def missing_subsystem_prefix(self) -> bool:
@@ -148,7 +149,7 @@ class Entry:
             "computed_complexity": self.computed_complexity,
             "complexity_delta": self.complexity_delta,
             "has_explicit_complexity": self.has_explicit_complexity,
-            "is_unreleased": self.is_unreleased,
+            "is_latest": self.is_latest,
             "top_level_bullet_count": self.top_level_bullet_count,
             "total_points": self.total_points,
             "nested_bonus_count": self.nested_bonus_count,
@@ -263,14 +264,14 @@ def parse_changelog(path: Path) -> list[Entry]:
     return entries
 
 
-def build_daily_rows(entries: list[Entry], include_unreleased: bool) -> list[dict[str, object]]:
+def build_daily_rows(entries: list[Entry], include_latest: bool) -> list[dict[str, object]]:
     grouped: dict[str, dict[str, object]] = {}
     for entry in entries:
         key = entry.iso_date
         if key is None:
-            if not include_unreleased:
+            if not include_latest:
                 continue
-            key = "unreleased"
+            key = "latest"
         if key not in grouped:
             grouped[key] = {
                 "date": key,
@@ -371,10 +372,10 @@ def finalize_grouped_rows(grouped: dict[object, dict[str, object]], sort_keys: l
     return rows
 
 
-def build_subsystem_rows(entries: list[Entry], include_unreleased: bool) -> list[dict[str, object]]:
+def build_subsystem_rows(entries: list[Entry], include_latest: bool) -> list[dict[str, object]]:
     grouped: dict[str, dict[str, object]] = {}
     for entry in entries:
-        if entry.is_unreleased and not include_unreleased:
+        if entry.is_latest and not include_latest:
             continue
         key = entry.subsystem or "unscoped"
         if key not in grouped:
@@ -383,14 +384,14 @@ def build_subsystem_rows(entries: list[Entry], include_unreleased: bool) -> list
     return finalize_grouped_rows(grouped, sorted(grouped))
 
 
-def build_day_subsystem_rows(entries: list[Entry], include_unreleased: bool) -> list[dict[str, object]]:
+def build_day_subsystem_rows(entries: list[Entry], include_latest: bool) -> list[dict[str, object]]:
     grouped: dict[tuple[str, str], dict[str, object]] = {}
     for entry in entries:
         date_key = entry.iso_date
         if date_key is None:
-            if not include_unreleased:
+            if not include_latest:
                 continue
-            date_key = "unreleased"
+            date_key = "latest"
         subsystem_key = entry.subsystem or "unscoped"
         key = (date_key, subsystem_key)
         if key not in grouped:
@@ -399,12 +400,12 @@ def build_day_subsystem_rows(entries: list[Entry], include_unreleased: bool) -> 
     return finalize_grouped_rows(grouped, sorted(grouped))
 
 
-def build_overall_rows(entries: list[Entry], include_unreleased: bool) -> list[dict[str, object]]:
-    scoped_entries = entries if include_unreleased else [entry for entry in entries if not entry.is_unreleased]
+def build_overall_rows(entries: list[Entry], include_latest: bool) -> list[dict[str, object]]:
+    scoped_entries = entries if include_latest else [entry for entry in entries if not entry.is_latest]
     if not scoped_entries:
         return []
     row = init_grouped_score_row(
-        scope="including_unreleased" if include_unreleased else "committed_only",
+        scope="including_latest" if include_latest else "committed_only",
         subsystem_count=len({entry.subsystem or "unscoped" for entry in scoped_entries}),
     )
     for entry in scoped_entries:
@@ -458,9 +459,9 @@ def parse_args() -> argparse.Namespace:
         help="Output format.",
     )
     parser.add_argument(
-        "--include-unreleased",
+        "--include-latest",
         action="store_true",
-        help="Include unreleased entries. Day output groups them under 'unreleased'.",
+        help="Include entries from the Latest section. Day output groups them under 'latest'.",
     )
     parser.add_argument(
         "--verify",
@@ -479,7 +480,7 @@ def main() -> int:
         unscoped = [entry for entry in entries if entry.missing_subsystem_prefix]
         if mismatches:
             for entry in mismatches:
-                commit = entry.commit or "unreleased"
+                commit = entry.commit or "latest"
                 print(
                     f"score mismatch: {commit} {entry.title!r} header={entry.header_score} computed={entry.computed_score}",
                     file=sys.stderr,
@@ -487,7 +488,7 @@ def main() -> int:
         complexity_mismatches = [entry for entry in entries if entry.complexity_delta != 0]
         if complexity_mismatches:
             for entry in complexity_mismatches:
-                commit = entry.commit or "unreleased"
+                commit = entry.commit or "latest"
                 print(
                     f"complexity mismatch: {commit} {entry.title!r} "
                     f"header={entry.effective_header_complexity} computed={entry.computed_complexity}",
@@ -495,24 +496,24 @@ def main() -> int:
                 )
         if unscoped:
             for entry in unscoped:
-                commit = entry.commit or "unreleased"
+                commit = entry.commit or "latest"
                 print(f"missing subsystem prefix: {commit} {entry.title!r}", file=sys.stderr)
         if mismatches or complexity_mismatches or unscoped:
             return 1
 
-    if not args.include_unreleased:
-        entries = [entry for entry in entries if not entry.is_unreleased]
+    if not args.include_latest:
+        entries = [entry for entry in entries if not entry.is_latest]
 
     if args.group_by == "entry":
         rows = [entry.as_row() for entry in entries]
     elif args.group_by == "day":
-        rows = build_daily_rows(entries, args.include_unreleased)
+        rows = build_daily_rows(entries, args.include_latest)
     elif args.group_by == "overall":
-        rows = build_overall_rows(entries, args.include_unreleased)
+        rows = build_overall_rows(entries, args.include_latest)
     elif args.group_by == "subsystem":
-        rows = build_subsystem_rows(entries, args.include_unreleased)
+        rows = build_subsystem_rows(entries, args.include_latest)
     else:
-        rows = build_day_subsystem_rows(entries, args.include_unreleased)
+        rows = build_day_subsystem_rows(entries, args.include_latest)
     emit_rows(rows, args.format)
     return 0
 

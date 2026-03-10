@@ -22,7 +22,7 @@ If you need to compare your local setup against the canonical source, use [Entrp
 
 1. Use a Linux-kernel-style header: `subsystem: summary`.
 2. Keep the changelog on a deliberate lag-by-one commit-ID model:
-   - while work is still in flight, keep it under `Unreleased` as `### New commit — subsystem: summary`
+   - while work is still in flight, keep it under `Latest` as `### New commit — subsystem: summary`
    - do not guess or prefill a commit hash
    - after the commit lands, rewrite that entry with the real date and commit ID and move it into committed history
    - if more work starts after that commit, open a fresh `New commit` entry for the next change
@@ -57,7 +57,7 @@ If you need to compare your local setup against the canonical source, use [Entrp
 1. Run:
 
    ```bash
-   python3 tools/changelog_scores.py --group-by entry --format csv --include-unreleased --verify
+   python3 tools/changelog_scores.py --group-by entry --format csv --include-latest --verify
    ```
 
 2. Then run:

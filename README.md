@@ -40,10 +40,10 @@ Current project snapshot from [CHANGELOG.md](CHANGELOG.md):
 
 | Metric | Value |
 | --- | --- |
-| Mean autonomy score | `3.75 / 6` |
-| Mean complexity | `12.00 / commit` |
-| Mean score per top-level bullet | `3.60 / 6` |
-| History covered | `4` commits across `3` subsystems |
+| Mean autonomy score | `3.80 / 6` |
+| Mean complexity | `10.80 / commit` |
+| Mean score per top-level bullet | `3.67 / 6` |
+| History covered | `5` commits across `3` subsystems |
 <!-- autonomy-golf-snapshot:end -->
 
 ## Document Map
@@ -111,13 +111,13 @@ Once autonomy golf is already installed in a project, the shorter maintenance in
 Project-level rollup:
 
 ```bash
-python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased
+python3 tools/changelog_scores.py --group-by overall --format csv --include-latest
 ```
 
 Per-entry verification:
 
 ```bash
-python3 tools/changelog_scores.py --group-by entry --format csv --include-unreleased --verify
+python3 tools/changelog_scores.py --group-by entry --format csv --include-latest --verify
 ```
 
 Refresh the badge and README snapshot:
