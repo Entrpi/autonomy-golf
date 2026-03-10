@@ -23,9 +23,20 @@ If an entry has no measurements yet, it should say so explicitly.
 
 ## Latest
 
+### New commit — changelog: Clarify lag-by-one commit stamping — score `5` — complexity `7`
+
+**Human-driven (5)**
+
+- Pointed out that a commit cannot safely amend itself just to add its own hash to committed history, because the amend changes the hash again.
+  - Meaning: the changelog’s lag-by-one rule needs to be stricter and more explicit about when a commit ID can be recorded.
+  - Motivation: the previous attempt at self-stamping left the committed-history entry pointing at the wrong hash.
+  - Purpose: make the canonical autonomy-golf maintenance loop mechanically correct, not just well-intentioned.
+  - Corrected the previously self-stamped commit ID from `6e3d4ba` to the actual landed hash `4561619`.
+  - Tightened the checklist and agent brief to say explicitly that a commit must not amend itself just to stamp its own hash; only a later commit may move it into committed history.
+
 ## Committed History
 
-### March 10, 2026 — `6e3d4ba` — changelog: Rename active section to Latest — score `4` — complexity `6`
+### March 10, 2026 — `4561619` — changelog: Rename active section to Latest — score `4` — complexity `6`
 
 **Human-directed, AI-shaped (4)**
 

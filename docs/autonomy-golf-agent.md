@@ -74,6 +74,7 @@ Do not restate the changelog shape from memory. Use [../CHANGELOG.md](../CHANGEL
 - `Score` and optional `Complexity`
 - `Grounding`
 - the lag-by-one commit-ID model under `Latest`
+- the rule that a commit must not amend itself just to stamp its own hash; only a later commit may move it into committed history
 
 ## Grounding
 
