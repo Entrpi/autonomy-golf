@@ -22,6 +22,7 @@ Related files:
 Start from the working bundle in the canonical repository. Copy or adapt:
 
 - `CHANGELOG.md`
+- the README autonomy-golf block from [../README.md](../README.md), including the headline badge, local anchor target, snapshot markers, and refresh command
 - `docs/autonomy-golf.md`
 - `docs/autonomy-golf-agent.md`
 - `docs/autonomy-golf-checklist.md`
@@ -38,7 +39,7 @@ The goal is not just to add a badge. The goal is to install a disciplined loop t
 
 ## Score Model
 
-Use the score ladder and header conventions already defined in [../CHANGELOG.md](../CHANGELOG.md). The essential scale is:
+Use the Score ladder and header conventions already defined in [../CHANGELOG.md](../CHANGELOG.md). The essential scale is:
 
 | Tier | Score |
 | --- | ---: |
@@ -50,8 +51,8 @@ Use the score ladder and header conventions already defined in [../CHANGELOG.md]
 | `Self-initiated, human-approved` | `1` |
 | `Fully autonomous` | `0` |
 
-`Grounding` is separate and unscored. Lower `score` is better.
-`complexity` should follow the canonical parser rule: sum the top-level provenance weights, then add `+1` for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines.
+`Grounding` is separate and unscored. Lower `Score` is better.
+`Complexity` should follow the canonical parser rule: sum the top-level provenance weights, then add `+1` for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines.
 
 ## Hard Rules
 
@@ -70,7 +71,7 @@ Do not restate the changelog shape from memory. Use [../CHANGELOG.md](../CHANGEL
 
 - subsystem-prefixed headers
 - provenance section labels
-- `score` and optional `complexity`
+- `Score` and optional `Complexity`
 - `Grounding`
 - the lag-by-one commit-ID model under `Unreleased`
 
@@ -90,10 +91,11 @@ Use the strongest practical grounding the change deserves. If stronger validatio
 
 1. Start from [../README.md](../README.md) to understand the visible project shape.
 2. Copy or adapt [../CHANGELOG.md](../CHANGELOG.md), [autonomy-golf.md](autonomy-golf.md), and [autonomy-golf-checklist.md](autonomy-golf-checklist.md).
-3. Copy or adapt [../tools/changelog_scores.py](../tools/changelog_scores.py) and [../tools/render_autonomy_badge.py](../tools/render_autonomy_badge.py).
-4. Add a README badge or snapshot driven by the parser output.
-5. If the project already has change-management hooks, wire autonomy golf into that path instead of inventing a parallel ritual. In practice, the best place is usually the pre-commit or pre-merge flow.
-6. Tell future agents to maintain the system through the checklist, not ad hoc.
+3. Copy or adapt the autonomy-golf README block from [../README.md](../README.md) so the target project gets the same badge, anchor, and generated snapshot pattern.
+4. Copy or adapt [../tools/changelog_scores.py](../tools/changelog_scores.py) and [../tools/render_autonomy_badge.py](../tools/render_autonomy_badge.py).
+5. Make sure the README block is actually driven by the parser output rather than hand-maintained.
+6. If the project already has change-management hooks, wire autonomy golf into that path instead of inventing a parallel ritual. In practice, the best place is usually the pre-commit or pre-merge flow.
+7. Tell future agents to maintain the system through the checklist, not ad hoc.
 
 ## Maintenance Handoff
 
@@ -103,7 +105,7 @@ That checklist should drive the normal loop. Do not duplicate it into a project-
 
 ## Suggested Prompt
 
-> Integrate autonomy golf into this project. Reuse the changelog template, parser, badge renderer, and docs from https://github.com/Entrpi/autonomy-golf. Follow the canonical `CHANGELOG.md` shape, use the checklist for maintenance rules, keep grounding separate from provenance, and bias toward under-claiming autonomy.
+> Integrate autonomy golf into this project. Reuse the changelog template, parser, badge renderer, and docs from https://github.com/Entrpi/autonomy-golf. Follow the canonical `CHANGELOG.md` shape, use the checklist for maintenance rules, keep `Grounding` separate from provenance, and bias toward under-claiming autonomy.
 
 ## Success Condition
 

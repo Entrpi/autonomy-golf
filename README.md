@@ -1,8 +1,8 @@
 # autonomy-golf
 
-![Autonomy Golf Badge](docs/autonomy-golf-badge.svg)
+[![Autonomy Golf Badge](docs/autonomy-golf-badge.svg)](#core-ideas)
 
-Come play autonomy golf: wire your project up with a changelog, parser, and badge that make the drive toward total automation fun, legible, and honest, then try to drive the score down over time without getting sloppy about evidence.
+This repo is playing autonomy golf on itself. It uses [CHANGELOG.md](CHANGELOG.md), a parser, and a badge to keep score as it tries to drive down toward total automation, or hole-in-one games; with clear evidence.
 
 Canonical GitHub home: [Entrpi/autonomy-golf](https://github.com/Entrpi/autonomy-golf)
 
@@ -14,14 +14,14 @@ Autonomy golf works best with an agent-managed `CHANGELOG.md` that stays readabl
 - the score parser in [tools/changelog_scores.py](tools/changelog_scores.py)
 - the badge renderer in [tools/render_autonomy_badge.py](tools/render_autonomy_badge.py)
 
-Just as importantly, autonomy golf is a discipline for building explicit consensus around a change's meaning, motivation, and purpose. The point is to make progress toward total automation both fun and meaningful: fun enough that teams want to play, meaningful enough that the score still corresponds to real autonomy.
+Autonomy golf makes the push toward total automation fun to play and meaningful to trust by forcing clear agreement on a change's meaning, motivation, and purpose.
 
-The key discipline is that autonomy golf tracks two separate things on purpose:
+Autonomy golf works because the Score and its Grounding are managed with agent integration and tooling in a gamified loop that also helps clarify project purpose and change motivation:
 
-- `score`: how autonomous the change was
+- `Score`: how autonomous the change was
 - `Grounding`: how well the change was validated
 
-`Grounding` is intentionally unscored. It is the evidence layer that keeps the autonomy accounting useful for validation and data-driven decisions instead of turning into a cosmetic badge game.
+`Grounding` is intentionally unscored. It is the evidence layer that keeps autonomy golf useful for validation and real decision-making.
 
 Scoring tiers:
 
@@ -40,10 +40,10 @@ Current project snapshot from [CHANGELOG.md](CHANGELOG.md):
 
 | Metric | Value |
 | --- | --- |
-| Mean autonomy score | `3.67 / 6` |
-| Mean complexity | `13.33 / commit` |
-| Mean score per top-level bullet | `3.50 / 6` |
-| History covered | `3` commits across `2` subsystems |
+| Mean autonomy score | `3.75 / 6` |
+| Mean complexity | `12.00 / commit` |
+| Mean score per top-level bullet | `3.60 / 6` |
+| History covered | `4` commits across `3` subsystems |
 <!-- autonomy-golf-snapshot:end -->
 
 ## Document Map
@@ -70,8 +70,8 @@ Once autonomy golf is already installed in a project, the shorter maintenance in
 ## Core Ideas
 
 - the central game is to push the project toward total automation in a way that stays enjoyable, legible, and worth trusting
-- `score` is the bounded autonomy signal on a `0..6` scale. Lower is better.
-- `complexity` is the scope signal: top-level provenance weights plus a `+1` bonus for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines.
+- `Score` is the bounded autonomy signal on a `0..6` scale. Lower is better.
+- `Complexity` is the scope signal: top-level provenance weights plus a `+1` bonus for each nested sub-bullet under provenance items scored `3` or higher, excluding `Meaning:`, `Motivation:`, and `Purpose:` narrative lines.
 - top-level provenance bullets are the scored units
 - good entries do more than log tasks; they build explicit consensus on a change's meaning, motivation, and purpose
 - `Grounding` is the separate validation signal: files changed, checks run, and measured effects. It is intentionally unscored so validation strength stays distinct from autonomy level.

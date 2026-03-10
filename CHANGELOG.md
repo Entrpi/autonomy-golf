@@ -23,7 +23,34 @@ If an entry has no measurements yet, it should say so explicitly.
 
 ## Unreleased
 
-### New commit — badge: Add house golf term to generated badge — score `4` — complexity `7`
+### New commit — docs: Tighten canonical README framing — score `4` — complexity `8`
+
+**Human-directed, AI-shaped (4)**
+
+- Requested that the canonical README pick up the improved project-local framing we just used in `autoresearch`, while leaving the exact wording and placement to the agent.
+  - Meaning: the canonical repo should present itself not just as a template library, but as a project that is itself playing autonomy golf on itself.
+  - Motivation: the old README opening still read mostly as a general invitation, while the newer phrasing makes the Score / Grounding loop and the self-referential use of the system clearer.
+  - Purpose: make the canonical repo a stronger example of the game in practice, not just a host for the rules and tools.
+  - Reworded the opening README framing so the repo explicitly describes itself as playing autonomy golf on itself through its changelog, parser, and badge.
+  - Tightened the README language around `Score` and `Grounding` so those terms read as the managed paired signals of the system rather than just a loose list of concepts.
+  - Wrapped the top badge in a local anchor link so the headline graphic jumps readers directly into the explanatory section it summarizes.
+  - Updated the agent brief so `What To Install` explicitly includes the README autonomy-golf block pattern, not just the changelog and tools.
+
+**Grounding**
+
+- Files:
+  - `README.md`
+  - `CHANGELOG.md`
+- Validation:
+  - `python3 tools/changelog_scores.py --group-by entry --format csv --include-unreleased --verify`
+  - `python3 tools/changelog_scores.py --group-by overall --format csv --include-unreleased`
+  - `python3 tools/render_autonomy_badge.py`
+- Measurements:
+  - This is README framing work, not a runtime optimization, so there are no performance measurements.
+
+## Committed History
+
+### March 10, 2026 — `55c401c` — badge: Add house golf term to generated badge — score `4` — complexity `7`
 
 **Human-directed, AI-shaped (4)**
 
@@ -50,8 +77,6 @@ If an entry has no measurements yet, it should say so explicitly.
     | Scope | commits | subsystems | mean score | mean complexity / commit | mean score / bullet |
     | --- | ---: | ---: | ---: | ---: | ---: |
     | `including_unreleased` | `3` | `2` | `3.67` | `13.33` | `3.50` |
-
-## Committed History
 
 ### March 10, 2026 — `0e70c0d` — changelog: Tighten maintenance checklist and canonical references — score `4` — complexity `20`
 
